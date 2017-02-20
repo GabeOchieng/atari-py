@@ -22,7 +22,9 @@
 #include "emucore/FSNode.hxx"
 #include "emucore/OSystem.hxx"
 
-#if (defined(WIN32) || defined(__MINGW32__))
+#include "common/Defaults.hpp"
+
+#if (defined(_WIN32) || defined(__MINGW32__))
 #   include "os_dependent/SettingsWin32.hxx"
 #   include "os_dependent/OSystemWin32.hxx"
 #else
