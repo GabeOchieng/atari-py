@@ -43,7 +43,7 @@
 #include "common/Defaults.hpp"
 #include "common/display_screen.h"
 #include "environment/stella_environment.hpp"
-#include "common/ScreenExporter.hpp"
+//Kojoley   #include "common/ScreenExporter.hpp"
 #include "common/Log.hpp"
 
 #include <string>
@@ -77,7 +77,7 @@ public:
   // Resets the Atari and loads a game. After this call the game
   // should be ready to play. This is necessary after changing a
   // setting for the setting to take effect.
-  void loadROM(std::string rom_file);
+  bool loadROM(std::string rom = "", std::string name = "");
 
   // Applies an action to the game and returns the reward. It is the
   // user's responsibility to check if the game has ended and reset
@@ -125,12 +125,12 @@ public:
   void restoreState(const ALEState& state);
 
   // Save the current screen as a png file
-  void saveScreenPNG(const std::string& filename);
+  //Kojoley   void saveScreenPNG(const std::string& filename);
 
   // Creates a ScreenExporter object which can be used to save a sequence of frames. Ownership 
   // said object is passed to the caller. Frames are saved in the directory 'path', which needs
   // to exists. 
-  ScreenExporter *createScreenExporter(const std::string &path) const;
+  //Kojoley   ScreenExporter *createScreenExporter(const std::string &path) const;
 
  public:
   std::auto_ptr<OSystem> theOSystem;
@@ -146,6 +146,7 @@ public:
   static void createOSystem(std::auto_ptr<OSystem> &theOSystem,
                             std::auto_ptr<Settings> &theSettings);
   static void loadSettings(const std::string& romfile,
+                           const std::string& name,
                            std::auto_ptr<OSystem> &theOSystem);
 };
 

@@ -66,98 +66,14 @@ elif sys.platform == "win32":
     defines.append(('BSPF_WIN32', None))
     for fname in 'SettingsWin32.cxx OSystemWin32.cxx FSNodeWin32.cxx'.split():
         sources.append(os.path.join(basepath, 'os_dependent', fname))
-
-
-def rglob(path, pattern):
-    return fnmatch.filter(list_files(path), pattern)
-
-
-def find_include_dirs(root, fname):
-    return {os.path.dirname(path)
-            for path in rglob(root, '*' + fname)}
-
-
-library_dirs = []
-zlib_root = os.environ.get('ZLIB_ROOT')
-if zlib_root is not None:
-    import fnmatch
-
-    zlib_includes = []
-
-    zlib_dirs = find_include_dirs(zlib_root, 'zlib.h')
-    if not zlib_dirs:
-        raise ValueError("Failed to find 'zlib.h' under ZLIB_ROOT folder. "
-                         "It looks like there is no zlib in supplied path.")
-    zlib_includes += zlib_dirs
-
-    zconf_dirs = find_include_dirs(zlib_root, 'zconf.h')
-    if not zlib_includes:
-        raise ValueError("Failed to find 'zconf.h' under ZLIB_ROOT folder. "
-                         "Have you compiled zlib?")
-    zlib_includes += zconf_dirs
-    includes += zlib_includes
-
-    zlib_libraries = set()
-
-    # Try to compile a test program against zlib
-    from distutils.ccompiler import get_default_compiler, new_compiler
-    compiler = new_compiler(compiler=get_default_compiler())
-    ext = compiler.static_lib_extension
-
-    if os.name == 'nt':
-        zlib_name = 'zlib'
-    else:
-        zlib_name = 'libz'
-    zlib_lib_pattern = '%s*%s' % (zlib_name, ext)
-
-    import tempfile
-    from distutils.ccompiler import CompileError, LinkError
-    tmp_dir = tempfile.mkdtemp()
-    src_path = os.path.join(tmp_dir, 'zlibtest.c')
-    with open(src_path, 'w') as f:
-        f.write("#include <zlib.h>\nint main() { inflate(0, 0); return 0; }")
-    try:
-        for i, path in enumerate(rglob(zlib_root, '*' + zlib_lib_pattern)):
-            tmp_dir_i = os.path.join(tmp_dir, str(i))
-            zlib_library = os.path.splitext(os.path.basename(path))[0]
-            zlib_library_dir = os.path.dirname(path)
-            try:
-                objects = compiler.compile([src_path], tmp_dir_i,
-                                           include_dirs=zlib_includes)
-                compiler.link_executable(objects, 'zlibtest', tmp_dir_i,
-                                         libraries=[zlib_library],
-                                         library_dirs=[zlib_library_dir])
-            except (CompileError, LinkError) as e:
-                pass  # skip this library as malformed
-            else:
-                zlib_libraries.add((zlib_library, zlib_library_dir))
-    finally:
-        import shutil
-        shutil.rmtree(tmp_dir, ignore_errors=True)
-
-    if not zlib_libraries:
-        raise ValueError("Failed to find a suitable library (%s) under "
-                         "ZLIB_ROOT folder. Have you compiled zlib?"
-                         % zlib_lib_pattern)
-
-    # Priority to static library (Windows)
-    for zlib_library, zlib_library_dir in zlib_libraries:
-        if 'static' in zlib_library:
-            break
-    library_dirs.append(zlib_library_dir)
-else:
-    if os.name == 'nt':
-        zlib_library = 'zlib'
-    else:
-        zlib_library = 'z'
+    # disable msvc secure warnings
+    defines.append(('_CRT_SECURE_NO_WARNINGS', None))
 
 
 ale_c = Library('ale_c',
                 define_macros=defines,
                 sources=sources,
                 include_dirs=includes,
-                libraries=[zlib_library],
-                library_dirs=library_dirs,
                 )
 
 

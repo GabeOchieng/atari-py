@@ -47,8 +47,8 @@ ale_lib.setBool.argtypes = [c_void_p, c_char_p, c_bool]
 ale_lib.setBool.restype = None
 ale_lib.setFloat.argtypes = [c_void_p, c_char_p, c_float]
 ale_lib.setFloat.restype = None
-ale_lib.loadROM.argtypes = [c_void_p, c_char_p]
-ale_lib.loadROM.restype = None
+ale_lib.loadROM.argtypes = [c_void_p, c_char_p, c_int, c_char_p]
+ale_lib.loadROM.restype = c_bool
 ale_lib.act.argtypes = [c_void_p, c_int]
 ale_lib.act.restype = c_int
 ale_lib.game_over.argtypes = [c_void_p]
@@ -89,8 +89,6 @@ ale_lib.saveState.argtypes = [c_void_p]
 ale_lib.saveState.restype = None
 ale_lib.loadState.argtypes = [c_void_p]
 ale_lib.loadState.restype = None
-ale_lib.saveScreenPNG.argtypes = [c_void_p, c_char_p]
-ale_lib.saveScreenPNG.restype = None
 ale_lib.cloneState.argtypes = [c_void_p]
 ale_lib.cloneState.restype = c_void_p
 ale_lib.restoreState.argtypes = [c_void_p, c_void_p]
@@ -157,7 +155,13 @@ class ALEInterface(object):
       ale_lib.setFloat(self.obj, _as_bytes(key), float(value))
 
     def loadROM(self, rom_file):
-        ale_lib.loadROM(self.obj, _as_bytes(rom_file))
+        name, _ = os.path.splitext(os.path.basename(rom_file))
+        if not isinstance(name, bytes):
+            name = name.encode('utf-8')
+        with open(rom_file, 'rb') as f:
+            data = f.read()
+        if not ale_lib.loadROM(self.obj, data, len(data), name):
+            raise ValueError("Failed to load ROM")
 
     def act(self, action):
         return ale_lib.act(self.obj, int(action))
@@ -279,7 +283,9 @@ class ALEInterface(object):
         return ram
 
     def saveScreenPNG(self, filename):
-        return ale_lib.saveScreenPNG(self.obj, _as_bytes(filename))
+        from PIL import Image
+        im = Image.fromarray(self.getScreenRGB())
+        im.save(filename, 'png')
 
     def saveState(self):
         return ale_lib.saveState(self.obj)

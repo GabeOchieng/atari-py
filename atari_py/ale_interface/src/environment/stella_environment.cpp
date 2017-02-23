@@ -56,7 +56,7 @@ StellaEnvironment::StellaEnvironment(OSystem* osystem, RomSettings* settings):
     ale::Logger::Info << "Recording screens to directory: " << recordDir << std::endl;
     
     // Create the screen exporter
-    m_screen_exporter.reset(new ScreenExporter(m_osystem->colourPalette(), recordDir)); 
+    //Kojoley   m_screen_exporter.reset(new ScreenExporter(m_osystem->colourPalette(), recordDir)); 
   }
 }
 
@@ -157,8 +157,8 @@ reward_t StellaEnvironment::act(Action player_a_action, Action player_b_action) 
     sum_rewards += oneStepAct(m_player_a_action, m_player_b_action);
   }
 
-  if (m_screen_exporter.get() != NULL)
-    m_screen_exporter->saveNext(m_screen);
+  //Kojoley   if (m_screen_exporter.get() != NULL)
+  //Kojoley     m_screen_exporter->saveNext(m_screen);
 
   return sum_rewards;
 }

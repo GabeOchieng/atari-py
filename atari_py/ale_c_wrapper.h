@@ -23,7 +23,7 @@ extern "C" {
   SYMBOL_EXPORT void setInt(ALEInterface *ale,const char *key,int value){ale->setInt(key,value);}
   SYMBOL_EXPORT void setBool(ALEInterface *ale,const char *key,bool value){ale->setBool(key,value);}
   SYMBOL_EXPORT void setFloat(ALEInterface *ale,const char *key,float value){ale->setFloat(key,value);}
-  SYMBOL_EXPORT void loadROM(ALEInterface *ale,const char *rom_file){ale->loadROM(rom_file);}
+  SYMBOL_EXPORT bool loadROM(ALEInterface *ale,const char *rom,size_t size,const char *name){return ale->loadROM(std::string(rom, size), name);}
   SYMBOL_EXPORT int act(ALEInterface *ale,int action){return ale->act((Action)action);}
   SYMBOL_EXPORT bool game_over(ALEInterface *ale){return ale->game_over();}
   SYMBOL_EXPORT void reset_game(ALEInterface *ale){ale->reset_game();}
@@ -99,7 +99,7 @@ extern "C" {
 
   SYMBOL_EXPORT void saveState(ALEInterface *ale){ale->saveState();}
   SYMBOL_EXPORT void loadState(ALEInterface *ale){ale->loadState();}
-  SYMBOL_EXPORT void saveScreenPNG(ALEInterface *ale,const char *filename){ale->saveScreenPNG(filename);}
+  //Kojoley   SYMBOL_EXPORT void saveScreenPNG(ALEInterface *ale,const char *filename){ale->saveScreenPNG(filename);}
 
   SYMBOL_EXPORT ALEState* cloneState(ALEInterface *ale) {
     return new ALEState(ale->cloneState());
