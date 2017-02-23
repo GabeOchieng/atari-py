@@ -24,7 +24,7 @@
 
 ALEController::ALEController(OSystem* osystem):
   m_osystem(osystem),
-  m_settings(buildRomRLWrapper(m_osystem->settings().getString("rom_file"))),
+  m_settings(buildRomRLWrapper(m_osystem->settings().getString("rom_name"))),
   m_environment(m_osystem, m_settings.get()) {
 
   if (m_settings.get() == NULL) {

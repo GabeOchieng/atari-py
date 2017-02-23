@@ -150,16 +150,9 @@ static const RomSettings *roms[]  = {
 
 
 /* looks for the RL wrapper corresponding to a particular rom title */
-RomSettings *buildRomRLWrapper(const std::string &rom) {
-
-    size_t slash_ind = rom.find_last_of("/\\");
-    std::string rom_str = rom.substr(slash_ind + 1);
-    size_t dot_idx = rom_str.find_first_of(".");
-    rom_str = rom_str.substr(0, dot_idx);
-    std::transform(rom_str.begin(), rom_str.end(), rom_str.begin(), ::tolower);
-
+RomSettings *buildRomRLWrapper(const std::string &rom_name) {
     for (size_t i=0; i < sizeof(roms)/sizeof(roms[0]); i++) {
-        if (rom_str == roms[i]->rom()) return roms[i]->clone();
+        if (rom_name == roms[i]->rom()) return roms[i]->clone();
     }
 
     return NULL;

@@ -39,7 +39,7 @@ class VideoDialog;
 #include "m6502/src/bspf/src/bspf.hxx"
 #include "../common/display_screen.h" 
 #include "../common/ColourPalette.hpp"
-#include "../common/ScreenExporter.hpp"
+//Kojoley   #include "../common/ScreenExporter.hpp"
 #include "../common/Log.hpp"
 
 struct Resolution {
@@ -282,7 +282,7 @@ class OSystem
 
       @return String representing the full path of the ROM file.
     */
-    const std::string& romFile() const { return myRomFile; }
+    //Kojoley  const std::string& romFile() const { return myRomFile; }
 
     /**
       Switches between software and OpenGL framebuffer modes.
@@ -293,9 +293,11 @@ class OSystem
       Creates a new game console from the specified romfile.
 
       @param romfile  The full pathname of the ROM to use
+      @param name     The ROM name
       @return  True on successful creation, otherwise false
     */
-    bool createConsole(const std::string& romfile = "");
+    bool createConsole(const std::string& romfile = "",
+                       const std::string& name = "");
 
     /**
       Deletes the currently defined console, if it exists.
@@ -313,9 +315,11 @@ class OSystem
       Console object and querying it.
 
       @param romfile  The full pathname of the ROM to use
+      @param name     The ROM name
       @return  Some information about this ROM
     */
-    std::string getROMInfo(const std::string& romfile);
+    std::string getROMInfo(const std::string& romfile,
+                           const std::string& name = "");
 
     /**
       The features which are conditionally compiled into Stella.
@@ -328,13 +332,13 @@ class OSystem
       Open the given ROM and return an array containing its contents.
 
       @param rom    The absolute pathname of the ROM file
+      @param name   The ROM name
       @param md5    The md5 calculated from the ROM file
-      @param image  A pointer to store the ROM data
-                    Note, the calling method is responsible for deleting this
-      @param size   The amount of data read into the image array
       @return  False on any errors, else true
     */
-    bool openROM(const std::string& rom, std::string& md5, uInt8** image, int* size);
+    bool openROM(const std::string& rom,
+                 const std::string& name,
+                 std::string& md5);
 
     /**
       Issue a quit event to the OSystem.
@@ -503,7 +507,7 @@ class OSystem
     std::string myPropertiesFile;
 
     std::string myGameListCacheFile;
-    std::string myRomFile;
+    //Kojoley  std::string myRomFile;
 
     std::string myFeatures;
 

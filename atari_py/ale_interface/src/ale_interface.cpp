@@ -65,7 +65,7 @@ void ALEInterface::createOSystem(std::auto_ptr<OSystem> &theOSystem,
   theOSystem->settings().loadConfig();
 }
 
-void ALEInterface::loadSettings(const string& romfile,
+void ALEInterface::loadSettings(const string& rom, const string& name,
                                 std::auto_ptr<OSystem> &theOSystem) {
   // Load the configuration from a config file (passed on the command
   //  line), if provided
@@ -78,13 +78,13 @@ void ALEInterface::loadSettings(const string& romfile,
   theOSystem->create();
 
   // Attempt to load the ROM
-  if (romfile == "" || !FilesystemNode::fileExists(romfile)) {
-    Logger::Error << "No ROM File specified or the ROM file was not found."
+  if (rom.empty()) {
+    Logger::Error << "Empty ROM File specified"
               << std::endl;
     exit(1);
-  } else if (theOSystem->createConsole(romfile))  {
-    Logger::Info << "Running ROM file..." << std::endl;
-    theOSystem->settings().setString("rom_file", romfile);
+  } else if (theOSystem->createConsole(rom, name))  {
+    Logger::Info << "Running ROM " << name << "..." << std::endl;
+    theOSystem->settings().setString("rom_name", name);
   } else {
     exit(1);
   }
@@ -117,13 +117,11 @@ ALEInterface::~ALEInterface() {}
 // ready to play. Resets the OSystem/Console/Environment/etc. This is
 // necessary after changing a setting. Optionally specify a new rom to
 // load.
-void ALEInterface::loadROM(string rom_file = "") {
+bool ALEInterface::loadROM(string rom_file, string name) {
   assert(theOSystem.get());
-  if (rom_file.empty()) {
-    rom_file = theOSystem->romFile();
-  }
-  loadSettings(rom_file, theOSystem);
-  romSettings.reset(buildRomRLWrapper(rom_file));
+  loadSettings(rom_file, name, theOSystem);
+  romSettings.reset(buildRomRLWrapper(name));
+  if (romSettings.get() == NULL) return false;
   environment.reset(new StellaEnvironment(theOSystem.get(), romSettings.get()));
   max_num_frames = theOSystem->settings().getInt("max_num_frames_per_episode");
   environment->reset();
@@ -135,6 +133,7 @@ void ALEInterface::loadROM(string rom_file = "") {
     exit(1);
   }
 #endif
+  return true;
 }
 
 // Get the value of a setting.
@@ -305,6 +304,7 @@ void ALEInterface::restoreSystemState(const ALEState& state) {
   return environment->restoreSystemState(state);
 }
 
+/* Kojoley
 void ALEInterface::saveScreenPNG(const string& filename) {
   
   ScreenExporter exporter(theOSystem->colourPalette());
@@ -314,3 +314,4 @@ void ALEInterface::saveScreenPNG(const string& filename) {
 ScreenExporter *ALEInterface::createScreenExporter(const std::string &filename) const {
     return new ScreenExporter(theOSystem->colourPalette(), filename); 
 }
+Kojoley */

@@ -20,7 +20,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
-#include <zlib.h>
+//Kojoley   #include <zlib.h>
 #include <string.h>
 using namespace std;
 
@@ -57,7 +57,7 @@ OSystem::OSystem()
     myConsole(NULL),
     myQuitLoop(false),
     mySkipEmulation(false),
-    myRomFile(""),
+    //Kojoley  myRomFile(""),
     myFeatures(""),
     p_display_screen(NULL)
 {
@@ -348,7 +348,7 @@ void OSystem::createSound()
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool OSystem::createConsole(const string& romfile)
+bool OSystem::createConsole(const string& rom, const string& name)
 {
   // Do a little error checking; it shouldn't be necessary
   if(myConsole) deleteConsole();
@@ -356,27 +356,20 @@ bool OSystem::createConsole(const string& romfile)
   bool retval = false; 
 
   // If a blank ROM has been given, we reload the current one (assuming one exists)
-  if(romfile == "")
+  if(rom.empty())
   {
-    if(myRomFile == "")
-    {
-      ale::Logger::Error << "ERROR: Rom file not specified ..." << endl;
-      return false;
-    }
+    ale::Logger::Error << "ERROR: Rom not specified ..." << endl;
+    return false;
   }
-  else
-    myRomFile = romfile;
 
   // Open the cartridge image and read it in
-  uInt8* image;
-  int size = -1;
   string md5;
-  if(openROM(myRomFile, md5, &image, &size))
+  if(openROM(rom, name, md5))
   {
     // Get all required info for creating a valid console
     Cartridge* cart = (Cartridge*) NULL;
     Properties props;
-    if(queryConsoleInfo(image, size, md5, &cart, props))
+    if(queryConsoleInfo((const uInt8 *)rom.data(), rom.size(), md5, &cart, props))
     {
       // Create an instance of the 2600 game console
       myConsole = new Console(this, cart, props);
@@ -395,11 +388,9 @@ bool OSystem::createConsole(const string& romfile)
 
       if(mySettings->getBool("showinfo"))
         cerr << "Game console created:" << endl
-             << "  ROM file:  " << myRomFile << endl
              << myConsole->about() << endl;
       else
         ale::Logger::Info << "Game console created:" << endl
-             << "  ROM file:  " << myRomFile << endl
              << myConsole->about() << endl;
 
       // Update the timing info for a new console run
@@ -410,20 +401,16 @@ bool OSystem::createConsole(const string& romfile)
     }
     else
     {
-      ale::Logger::Error << "ERROR: Couldn't create console for " << myRomFile << " ..." << endl;
+      ale::Logger::Error << "ERROR: Couldn't create console for rom ..." << endl;
       retval = false;
     }
   }
   else
   {
-    ale::Logger::Error << "ERROR: Couldn't open " << myRomFile << " ..." << endl;
+    ale::Logger::Error << "ERROR: Couldn't open rom ..." << endl;
     retval = false;
   }
 
-  // Free the image since we don't need it any longer
-  if(size != -1) {
-    delete[] image;
-  }
   if (mySettings->getBool("display_screen", true)) {
 #ifndef __USE_SDL
     ale::Logger::Error << "Screen display requires directive __USE_SDL to be defined."
@@ -483,8 +470,9 @@ void OSystem::createLauncher()
 ALE */
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool OSystem::openROM(const string& rom, string& md5, uInt8** image, int* size)
+bool OSystem::openROM(const string& rom, const string& name, string& md5)
 {
+  /* Kojoley
   // Assume the file is either gzip'ed or not compressed at all
   gzFile f = gzopen(rom.c_str(), "rb");
   if(!f)
@@ -493,25 +481,21 @@ bool OSystem::openROM(const string& rom, string& md5, uInt8** image, int* size)
   *image = new uInt8[MAX_ROM_SIZE];
   *size = gzread(f, *image, MAX_ROM_SIZE);
   gzclose(f);
+  Kojoley */
 
   // If we get to this point, we know we have a valid file to open
   // Now we make sure that the file has a valid properties entry
-  md5 = MD5(*image, *size);
+  md5 = MD5((const uInt8 *)rom.data(), rom.size());
 
-  // Some games may not have a name, since there may not
-  // be an entry in stella.pro.  In that case, we use the rom name
-  // and reinsert the properties object
-  Properties props;
-  myPropSet->getMD5(md5, props);
-
-  string name = props.get(Cartridge_Name);
-  if(name == "Untitled")
-  {
-    // Get the filename from the rom pathname
-    string::size_type pos = rom.find_last_of(BSPF_PATH_SEPARATOR);
-    if(pos+1 != string::npos)
+  if (!name.empty()) {
+    // Some games may not have a name, since there may not
+    // be an entry in stella.pro.  In that case, we use the rom name
+    // and reinsert the properties object
+    Properties props;
+    myPropSet->getMD5(md5, props);
+  
+    if(props.get(Cartridge_Name) == "Untitled")
     {
-      name = rom.substr(pos+1);
       props.set(Cartridge_MD5, md5);
       props.set(Cartridge_Name, name);
       myPropSet->insert(props, false);
@@ -522,35 +506,30 @@ bool OSystem::openROM(const string& rom, string& md5, uInt8** image, int* size)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-string OSystem::getROMInfo(const string& romfile)
+string OSystem::getROMInfo(const string& rom, const string& name)
 {
   ostringstream buf;
 
   // Open the cartridge image and read it in
-  uInt8* image;
-  int size = -1;
   string md5;
-  if(openROM(romfile, md5, &image, &size))
+  if(openROM(rom, name, md5))
   {
     // Get all required info for creating a temporary console
     Cartridge* cart = (Cartridge*) NULL;
     Properties props;
-    if(queryConsoleInfo(image, size, md5, &cart, props))
+    if(queryConsoleInfo((const uInt8 *)rom.data(), rom.size(), md5, &cart, props))
     {
       Console* console = new Console(this, cart, props);
       if(console)
         buf << console->about();
       else
-        buf << "ERROR: Couldn't get ROM info for " << romfile << " ..." << endl;
+        buf << "ERROR: Couldn't get ROM info for rom ..." << endl;
 
       delete console;
     }
     else
-      buf << "ERROR: Couldn't open " << romfile << " ..." << endl;
+      buf << "ERROR: Couldn't open rom ..." << endl;
   }
-  // Free the image and console since we don't need it any longer
-  if(size != -1)
-    delete[] image;
 
   return buf.str();
 }
