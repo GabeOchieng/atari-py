@@ -2,30 +2,8 @@ import glob
 import os
 import sys
 from setuptools import setup
-from setuptools.command.build_ext import build_ext as _build_ext
-from setuptools.extension import Library
-
-
-# Force linker to produce a shared library
-class build_ext(_build_ext):
-    if sys.platform.startswith('linux'):
-        def get_ext_filename(self, fullname):
-            import setuptools.command.build_ext
-            tmp = setuptools.command.build_ext.libtype
-            setuptools.command.build_ext.libtype = 'shared'
-            ret = _build_ext.get_ext_filename(self, fullname)
-            setuptools.command.build_ext.libtype = tmp
-            return ret
-
-    def setup_shlib_compiler(self):
-        _build_ext.setup_shlib_compiler(self)
-        if sys.platform == 'win32':
-            from distutils.ccompiler import CCompiler
-            mtd = CCompiler.link_shared_object.__get__(self.shlib_compiler)
-        elif sys.platform.startswith('linux'):
-            from functools import partial
-            c = self.shlib_compiler
-            c.link_shared_object = partial(c.link, c.SHARED_LIBRARY)
+from setuptools.extension import Extension, Library
+from setuptools.command.build_clib import build_clib
 
 
 def list_files(path):
@@ -44,9 +22,8 @@ modules = [os.path.join(basepath, os.path.normpath(path))
                        'emucore/m6502/src/bspf/src environment games '
                        'games/supported external external/TinyMT'.split()]
 defines = []
-sources = [os.path.join('atari_py', 'ale_c_wrapper.cpp'),
-           os.path.join(basepath, 'ale_interface.cpp')]
-includes = ['atari_py', basepath, os.path.join(basepath, 'os_dependent')]
+sources = [os.path.join(basepath, 'ale_interface.cpp')]
+includes = [basepath, os.path.join(basepath, 'os_dependent')]
 includes += modules
 
 for folder in modules:
@@ -130,6 +107,7 @@ if zlib_root is not None:
                 pass  # skip this library as malformed
             else:
                 zlib_libraries.add((zlib_library, zlib_library_dir))
+                break
     finally:
         import shutil
         shutil.rmtree(tmp_dir, ignore_errors=True)
@@ -150,8 +128,9 @@ else:
     else:
         zlib_library = 'z'
 
-
-ale_c = Library('ale_c',
+import numpy
+'''
+ale_interface = Library('ale_interface',
                 define_macros=defines,
                 sources=sources,
                 include_dirs=includes,
@@ -159,6 +138,44 @@ ale_c = Library('ale_c',
                 library_dirs=library_dirs,
                 )
 
+ale_interface = 'ale_interface', dict(
+                macros=defines,
+                sources=sources,
+                include_dirs=includes,
+                libraries=[zlib_library],
+                library_dirs=library_dirs,
+
+                extra_compile_args=['/Zi'],
+                extra_link_args=['/DEBUG'],
+                )
+
+ale = Extension('atari_py.ale',
+                language='c++',
+                define_macros=defines,
+                sources=['atari_py/ale.pyx'],
+                #libraries=[ale_interface],
+
+                libraries=[zlib_library],
+                library_dirs=library_dirs,
+
+                extra_compile_args=['/Zi'],
+                extra_link_args=['/DEBUG'],
+                include_dirs=['atari_py', 'atari_py/ale_interface/src', numpy.get_include()] )
+
+'''
+ale = Extension('atari_py.ale',
+                language='c++',
+                define_macros=defines,
+                sources=['atari_py/ale.pyx'] + sources,
+
+                libraries=[zlib_library],
+                library_dirs=library_dirs,
+
+                #libraries=[ale_interface],
+                extra_compile_args=['/Zi'],
+                extra_link_args=['/DEBUG'],
+                include_dirs=['atari_py', 'atari_py/ale_interface/src', numpy.get_include()] + includes )
+#'''
 
 setup(name='atari-py',
       version='0.0.18',
@@ -169,8 +186,10 @@ setup(name='atari-py',
       license='',
       packages=['atari_py'],
       package_data={'atari_py': ['atari_roms/*']},
-      cmdclass={'build_ext': build_ext},
-      ext_modules=[ale_c],
+      #cmdclass={'build_ext': build_ext},
+      #cmdclass={'build_clib': build_clib},
+      #libraries = [ale_interface],
+      ext_modules=[ale],
       install_requires=['numpy', 'six'],
       tests_require=['nose2']
       )

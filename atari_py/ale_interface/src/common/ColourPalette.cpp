@@ -21,6 +21,26 @@
 #include <fstream>
 #include "Palettes.hpp"
 
+/*#ifdef __GNUC__
+#define PACKED( class_to_pack ) class_to_pack __attribute__((__packed__))
+#else
+#define PACKED( class_to_pack ) __pragma( pack(push, 1) ) class_to_pack __pragma( pack(pop) )
+#endif
+
+PACKED
+struct PixelRGB
+{
+   uInt8 r; uInt8 g; uInt8 b;
+}
+);
+
+PACKED(
+struct PixelBRG
+{
+   uInt8 b; uInt8 r; uInt8 g;
+}
+);*/
+
 using namespace std;
 
 inline uInt32 packRGB(uInt8 r, uInt8 g, uInt8 b)
@@ -84,6 +104,32 @@ void ColourPalette::applyPaletteRGB(uInt8* dst_buffer, uInt8 *src_buffer, size_t
     }
 }
 
+/*void ColourPalette::applyPaletteRGB(uInt8* dst_buffer, uInt8 *src_buffer, size_t src_size)
+{
+    uInt8 *p = src_buffer;
+    uInt8 *q = dst_buffer;
+
+    for(size_t i = 0; i < src_size; i++, p++){
+        uInt32 color = m_palette[*p];
+        *(uInt32*)q = color;
+        q += 3;
+    }
+}*/
+
+/*void ColourPalette::applyPaletteRGB(uInt8* dst_buffer, uInt8 *src_buffer, size_t src_size)
+{
+    uInt8 *p = src_buffer;
+    PixelRGB *q = (PixelRGB *)dst_buffer;
+
+    for(size_t i = 0; i < src_size; i++, p++){
+        PixelBGR color = m_palette[*p];
+        q->r = color.r;
+        q->g = color.g;
+        q->b = color.b;
+        ++q;
+    }
+}*/
+
 void ColourPalette::applyPaletteGrayscale(uInt8* dst_buffer, uInt8 *src_buffer, size_t src_size)
 {
     uInt8 *p = src_buffer;
@@ -119,6 +165,23 @@ void ColourPalette::setPalette(const string& type,
     };
 
     m_palette  = paletteMapping[paletteNum][paletteFormat];
+
+    /*if (m_palette)
+        delete m_palette;
+
+    m_palette = new uInt32[256];
+
+    uInt8 *q = (uInt8 *)m_palette;
+
+    for(size_t i = 0; i < 256; i++){
+        uInt32 rgb = paletteMapping[paletteNum][paletteFormat][i];
+        uInt8 r = (rgb >> 16) & 0xFF;
+        uInt8 g = (rgb >>  8) & 0xFF;
+        uInt8 b = (rgb >>  0) & 0xFF;
+        *q = b; ++q;
+        *q = g; ++q;
+        *q = r; ++q;
+    }*/
 }
 
 void ColourPalette::loadUserPalette(const string& paletteFile)
