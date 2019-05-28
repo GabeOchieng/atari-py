@@ -1,15 +1,13 @@
 # atari_py
 
-[![Build Status](https://travis-ci.org/openai/atari-py.svg?branch=master)](https://travis-ci.org/openai/atari-py)
-
-A packaged and slightly-modified version of [https://github.com/bbitmaster/ale_python_interface](https://github.com/bbitmaster/ale_python_interface).
+An `openai/atari-py` fork with Windows support and removed zlib/libpng dependencies.
 
 ## Installation
 
-To install via pip, run:
+To simply install [`atari-py` wheels (binaries)[https://github.com/Kojoley/atari-py/releases] use this command:
 
-```pip install atari-py```
+```pip install --no-index -f https://github.com/Kojoley/atari-py/releases atari_py```
 
-Alternatively, you can install using setuptools using:
+If you have any `distutils` supported compiler you can install from sources:
 
-```python setup.py install```
+```pip install git+https://github.com/Kojoley/atari-py.git```
