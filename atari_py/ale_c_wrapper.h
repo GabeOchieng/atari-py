@@ -27,9 +27,25 @@ extern "C" {
   SYMBOL_EXPORT int act(ALEInterface *ale,int action){return ale->act((Action)action);}
   SYMBOL_EXPORT bool game_over(ALEInterface *ale){return ale->game_over();}
   SYMBOL_EXPORT void reset_game(ALEInterface *ale){ale->reset_game();}
+  SYMBOL_EXPORT void getAvailableModes(ALEInterface *ale,int *availableModes) {
+    ModeVect modes_vect = ale->getAvailableModes();
+    for(unsigned int i = 0; i < ale->getAvailableModes().size(); i++){
+      availableModes[i] = modes_vect[i];
+    }
+  }
+  SYMBOL_EXPORT int getAvailableModesSize(ALEInterface *ale) {return ale->getAvailableModes().size();}
+  SYMBOL_EXPORT void setMode(ALEInterface *ale, int mode) {ale->setMode(mode);}
+  SYMBOL_EXPORT void getAvailableDifficulties(ALEInterface *ale,int *availableDifficulties) {
+    DifficultyVect difficulties_vect = ale->getAvailableDifficulties();
+    for(unsigned int i = 0; i < ale->getAvailableDifficulties().size(); i++){
+      availableDifficulties[i] = difficulties_vect[i];
+    }
+  }
+  SYMBOL_EXPORT int getAvailableDifficultiesSize(ALEInterface *ale) {return ale->getAvailableDifficulties().size();}
+  SYMBOL_EXPORT void setDifficulty(ALEInterface *ale, int difficulty) {ale->setDifficulty(difficulty);}
   SYMBOL_EXPORT void getLegalActionSet(ALEInterface *ale,int *actions){
     ActionVect action_vect = ale->getLegalActionSet();
-    for(unsigned int i = 0;i < ale->getLegalActionSet().size();i++){
+    for(unsigned int i = 0; i < ale->getLegalActionSet().size(); i++){
       actions[i] = action_vect[i];
     }
   }
@@ -65,8 +81,9 @@ extern "C" {
     size_t screen_size = w*h;
     pixel_t *ale_screen_data = ale->getScreen().getArray();
 
-    ale->theOSystem->colourPalette().applyPaletteRGB(output_buffer, ale_screen_data, screen_size);
+    ale->theOSystem->colourPalette().applyPaletteRGB(output_buffer, ale_screen_data, screen_size );
   }
+
 
   SYMBOL_EXPORT void getScreenRGB2(ALEInterface *ale, unsigned char *output_buffer){
     size_t w = ale->getScreen().width();
@@ -82,6 +99,7 @@ extern "C" {
         output_buffer[j++] = (zrgb>>0)&0xff;
     }
   }
+
 
   SYMBOL_EXPORT void getScreenGrayscale(ALEInterface *ale, unsigned char *output_buffer){
     size_t w = ale->getScreen().width();
