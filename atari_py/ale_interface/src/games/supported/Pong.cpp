@@ -111,18 +111,18 @@ ModeVect PongSettings::getAvailableModes() {
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void PongSettings::setMode(game_mode_t m, System &system,
-                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+                              StellaEnvironmentWrapper& environment) {
 
     if(m < getNumModes()) {
         // read the mode we are currently in
         unsigned char mode = readRam(&system, 0x96);
         // press select until the correct mode is reached
         while (mode != m) {
-            environment->pressSelect(2);
+            environment.pressSelect(2);
             mode = readRam(&system, 0x96);
         }
         //reset the environment to apply changes.
-        environment->softReset();
+        environment.softReset();
     }
     else {
         throw std::runtime_error("This mode doesn't currently exist for this game");
@@ -130,7 +130,7 @@ void PongSettings::setMode(game_mode_t m, System &system,
  }
 
 DifficultyVect PongSettings::getAvailableDifficulties() {
-    DifficultyVect diff = {0, 1};
-    return diff;
+    difficulty_t diff[] = {0, 1};
+    return DifficultyVect(diff + 0, diff + sizeof(diff)/sizeof(diff[0]));
 }
 

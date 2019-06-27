@@ -46,7 +46,7 @@
 #include "common/Log.hpp"
 
 #include <string>
-#include <memory>
+#include "common/scoped_ptr.hpp"
 
 static const std::string Version = "0.6.0";
 
@@ -180,24 +180,24 @@ public:
   //Kojoley   ScreenExporter *createScreenExporter(const std::string &path) const;
 
  public:
-  std::unique_ptr<OSystem> theOSystem;
-  std::unique_ptr<Settings> theSettings;
-  std::unique_ptr<RomSettings> romSettings;
-  std::unique_ptr<StellaEnvironment> environment;
+  scoped_ptr<OSystem> theOSystem;
+  scoped_ptr<Settings> theSettings;
+  scoped_ptr<RomSettings> romSettings;
+  scoped_ptr<StellaEnvironment> environment;
   int max_num_frames; // Maximum number of frames for each episode
 
  public:
   // Display ALE welcome message
   static std::string welcomeMessage();
   static void disableBufferedIO();
-  static void createOSystem(std::unique_ptr<OSystem> &theOSystem,
-                            std::unique_ptr<Settings> &theSettings);
+  static void createOSystem(scoped_ptr<OSystem>& theOSystem,
+                            scoped_ptr<Settings>& theSettings);
   static void loadSettings(const std::string& romfile,
                            const std::string& name,
-                           std::unique_ptr<OSystem> &theOSystem);
+                           OSystem& theOSystem);
 
  private:
-  static void checkForUnsupportedRom(std::unique_ptr<OSystem>& theOSystem);
+  static void checkForUnsupportedRom(OSystem& theOSystem);
 };
 
 #endif

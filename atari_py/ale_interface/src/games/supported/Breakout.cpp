@@ -132,18 +132,18 @@ ModeVect BreakoutSettings::getAvailableModes() {
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void BreakoutSettings::setMode(game_mode_t m, System &system,
-                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+                              StellaEnvironmentWrapper& environment) {
 
     if(m < getNumModes() * 4 && m % 4 == 0) {
         // read the mode we are currently in
         unsigned char mode = readRam(&system, 0xB2);
         // press select until the correct mode is reached
         while (mode != m) {
-            environment->pressSelect();
+            environment.pressSelect();
             mode = readRam(&system, 0xB2);
         }
         //reset the environment to apply changes.
-        environment->softReset();
+        environment.softReset();
     }
     else {
         throw std::runtime_error("This mode doesn't currently exist for this game");
@@ -152,7 +152,7 @@ void BreakoutSettings::setMode(game_mode_t m, System &system,
 
 
 DifficultyVect BreakoutSettings::getAvailableDifficulties() {
-    DifficultyVect diff = {0, 1};
-    return diff;
+    difficulty_t diff[] = {0, 1};
+    return DifficultyVect(diff + 0, diff + sizeof(diff)/sizeof(diff[0]));
 }
 

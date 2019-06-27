@@ -133,14 +133,14 @@ void KangarooSettings::loadState(Deserializer & ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect KangarooSettings::getAvailableModes() {
-    ModeVect modes = {0, 1};
-    return modes;
+    game_mode_t modes[] = {0, 1};
+    return ModeVect(modes + 0, modes + sizeof(modes)/sizeof(modes[0]));
 }
 
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void KangarooSettings::setMode(game_mode_t m, System &system,
-                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+                              StellaEnvironmentWrapper& environment) {
 
     if( m == 0 || m == 1){
         // read the mode we are currently in
@@ -148,11 +148,11 @@ void KangarooSettings::setMode(game_mode_t m, System &system,
         // press select until the correct mode is reached
         //in the welcome screen, the value of the mode is increased by 0x80
         while(mode != m && mode != m + 0x80) {
-            environment->pressSelect(2);
+            environment.pressSelect(2);
             mode = readRam(&system, 0xBA);
         }
         //reset the environment to apply changes.
-        environment->softReset();
+        environment.softReset();
     }
     else {
         throw std::runtime_error("This mode doesn't currently exist for this game");

@@ -130,43 +130,43 @@ ModeVect DoubleDunkSettings::getAvailableModes() {
 }
 
 void DoubleDunkSettings::goDown(System &system,
-                            std::unique_ptr<StellaEnvironmentWrapper> &environment) {
+                            StellaEnvironmentWrapper& environment) {
     // this game has a menu that allows to define various yes/no options
     // this function goes to the next option in the menu
     unsigned int previousSelection = readRam(&system, 0xB0);
     while(previousSelection == readRam(&system, 0xB0)){
-        environment->act(PLAYER_A_DOWN, PLAYER_B_NOOP);
-        environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+        environment.act(PLAYER_A_DOWN, PLAYER_B_NOOP);
+        environment.act(PLAYER_A_NOOP, PLAYER_B_NOOP);
     }
 }
 
 void DoubleDunkSettings::activateOption(System &system, unsigned int bitOfInterest,
-                                    std::unique_ptr<StellaEnvironmentWrapper> &environment) {
+                                    StellaEnvironmentWrapper& environment) {
     // once we are at the proper option in the menu,
     // if we want to enable it all we have to do is to go right
     while((readRam(&system, 0x80) & bitOfInterest) != bitOfInterest) {
-        environment->act(PLAYER_A_RIGHT, PLAYER_B_NOOP);
-        environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+        environment.act(PLAYER_A_RIGHT, PLAYER_B_NOOP);
+        environment.act(PLAYER_A_NOOP, PLAYER_B_NOOP);
     }
 }
 
 void DoubleDunkSettings::deactivateOption(System &system, unsigned int bitOfInterest,
-                                    std::unique_ptr<StellaEnvironmentWrapper> &environment) {
+                                    StellaEnvironmentWrapper& environment) {
     // once we are at the proper optio in the menu,
     // if we want to disable it all we have to do is to go left
     while((readRam(&system, 0x80) & bitOfInterest) == bitOfInterest) {
-        environment->act(PLAYER_A_LEFT, PLAYER_B_NOOP);
-        environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+        environment.act(PLAYER_A_LEFT, PLAYER_B_NOOP);
+        environment.act(PLAYER_A_NOOP, PLAYER_B_NOOP);
     }
 }
 
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void DoubleDunkSettings::setMode(game_mode_t m, System &system,
-                                std::unique_ptr<StellaEnvironmentWrapper> environment) {
+                                StellaEnvironmentWrapper& environment) {
 
     if(m < getNumModes()) {
-        environment->pressSelect();
+        environment.pressSelect();
 
         //discard the first two entries (irrelevant)
         goDown(system, environment);
@@ -204,10 +204,10 @@ void DoubleDunkSettings::setMode(game_mode_t m, System &system,
         }
 
         //reset the environment to apply changes.
-        environment->softReset();
+        environment.softReset();
         //apply starting action
-        environment->act(PLAYER_A_UPFIRE, PLAYER_B_NOOP);
-        environment->act(PLAYER_A_NOOP, PLAYER_B_NOOP);
+        environment.act(PLAYER_A_UPFIRE, PLAYER_B_NOOP);
+        environment.act(PLAYER_A_NOOP, PLAYER_B_NOOP);
         
     }
     else {

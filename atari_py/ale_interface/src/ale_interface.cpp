@@ -68,8 +68,8 @@ void ALEInterface::disableBufferedIO() {
   std::cout.sync_with_stdio();
 }
 
-void ALEInterface::createOSystem(std::unique_ptr<OSystem> &theOSystem,
-                          std::unique_ptr<Settings> &theSettings) {
+void ALEInterface::createOSystem(scoped_ptr<OSystem>& theOSystem,
+                          scoped_ptr<Settings>& theSettings) {
 #if (defined(_WIN32) || defined(__MINGW32__))
   theOSystem.reset(new OSystemWin32());
   theSettings.reset(new SettingsWin32(theOSystem.get()));
@@ -81,8 +81,8 @@ void ALEInterface::createOSystem(std::unique_ptr<OSystem> &theOSystem,
   theOSystem->settings().loadConfig();
 }
 
-void ALEInterface::checkForUnsupportedRom(std::unique_ptr<OSystem>& theOSystem) {
-  const Properties properties = theOSystem->console().properties();
+void ALEInterface::checkForUnsupportedRom(OSystem& theOSystem) {
+  const Properties properties = theOSystem.console().properties();
   const std::string md5 = properties.get(Cartridge_MD5);
   bool found = false;
   std::ifstream ss("md5.txt");
@@ -105,27 +105,27 @@ void ALEInterface::checkForUnsupportedRom(std::unique_ptr<OSystem>& theOSystem) 
 }
 
 void ALEInterface::loadSettings(const std::string& rom, const std::string& name,
-                                std::unique_ptr<OSystem> &theOSystem) {
+                                OSystem& theOSystem) {
   // Load the configuration from a config file (passed on the command
   //  line), if provided
-  std::string configFile = theOSystem->settings().getString("config", false);
+  std::string configFile = theOSystem.settings().getString("config", false);
 
   if (!configFile.empty()) {
-    theOSystem->settings().loadConfig(configFile.c_str());
+    theOSystem.settings().loadConfig(configFile.c_str());
   }
 
-  theOSystem->settings().validate();
-  theOSystem->create();
+  theOSystem.settings().validate();
+  theOSystem.create();
 
   // Attempt to load the ROM
   if (rom.empty()) {
     Logger::Error << "Empty ROM File specified"
               << std::endl;
     exit(1);
-  } else if (theOSystem->createConsole(rom, name))  {
+  } else if (theOSystem.createConsole(rom, name))  {
     checkForUnsupportedRom(theOSystem);
     Logger::Info << "Running ROM " << name << "..." << std::endl;
-    theOSystem->settings().setString("rom_name", name);
+    theOSystem.settings().setString("rom_name", name);
   } else {
     Logger::Error << "Unable to create console for " << name << std::endl;
     exit(1);
@@ -134,11 +134,11 @@ void ALEInterface::loadSettings(const std::string& rom, const std::string& name,
 // Must force the resetting of the OSystem's random seed, which is set before we change
 // choose our random seed.
   Logger::Info << "Random seed is "
-      << theOSystem->settings().getInt("random_seed") << std::endl;
-  theOSystem->resetRNGSeed();
+      << theOSystem.settings().getInt("random_seed") << std::endl;
+  theOSystem.resetRNGSeed();
 
-  std::string currentDisplayFormat = theOSystem->console().getFormat();
-  theOSystem->colourPalette().setPalette("standard", currentDisplayFormat);
+  std::string currentDisplayFormat = theOSystem.console().getFormat();
+  theOSystem.colourPalette().setPalette("standard", currentDisplayFormat);
 }
 
 ALEInterface::ALEInterface() {
@@ -163,7 +163,7 @@ ALEInterface::~ALEInterface() {
 // load.
 bool ALEInterface::loadROM(std::string rom_file, std::string name) {
   assert(theOSystem.get());
-  loadSettings(rom_file, name, theOSystem);
+  loadSettings(rom_file, name, *theOSystem);
   romSettings.reset(buildRomRLWrapper(name));
   if (romSettings.get() == NULL) return false;
   environment.reset(new StellaEnvironment(theOSystem.get(), romSettings.get()));

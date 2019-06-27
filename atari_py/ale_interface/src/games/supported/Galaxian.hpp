@@ -74,11 +74,15 @@ class GalaxianSettings : public RomSettings {
         // set the mode of the game
         // the given mode must be one returned by the previous function
         void setMode(game_mode_t mode, System &system,
-                     std::unique_ptr<StellaEnvironmentWrapper> environment); 
+                     StellaEnvironmentWrapper& environment); 
 
         // Returns a list of difficulties that the game can be played in.
         // 2 difficulties: 0 is left B, 1 is left A
-        DifficultyVect getAvailableDifficulties() { return { 0, 1}; }
+        DifficultyVect getAvailableDifficulties()
+        {
+            difficulty_t diff[] = {0, 1};
+            return DifficultyVect(diff + 0, diff + sizeof(diff)/sizeof(diff[0]));
+        }
 
 
     private:

@@ -134,24 +134,24 @@ void ZaxxonSettings::loadState(Deserializer & ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect ZaxxonSettings::getAvailableModes() {
-    ModeVect modes = {0, 8, 16, 24};
-    return modes;
+    game_mode_t modes[] = {0, 8, 16, 24};
+    return ModeVect(modes + 0, modes + sizeof(modes)/sizeof(modes[0]));
 }
 
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void ZaxxonSettings::setMode(game_mode_t m, System &system,
-                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+                              StellaEnvironmentWrapper& environment) {
 
     // read the mode we are currently in
     unsigned char mode = readRam(&system, 0x82);
     // press select until the correct mode is reached
     while (mode != m) {
         // hold select button for 10 frames
-        environment->pressSelect(10);
+        environment.pressSelect(10);
         mode = readRam(&system, 0x82);
     }
     //reset the environment to apply changes.
-    environment->softReset();
+    environment.softReset();
  }
 

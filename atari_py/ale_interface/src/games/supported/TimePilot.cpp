@@ -127,6 +127,6 @@ void TimePilotSettings::loadState(Deserializer & ser) {
 
 
 DifficultyVect TimePilotSettings::getAvailableDifficulties() {
-    DifficultyVect diff = {0, 1, 2};
-    return diff;
+    difficulty_t diff[] = {0, 1, 2};
+    return DifficultyVect(diff + 0, diff + sizeof(diff)/sizeof(diff[0]));
 }

@@ -137,27 +137,27 @@ ActionVect YarsRevengeSettings::getStartingActions() {
 
 // returns a list of mode that the game can be played in
 ModeVect YarsRevengeSettings::getAvailableModes() {
-    ModeVect modes = {0, 0x20, 0x40, 0x60};
-    return modes;
+    game_mode_t modes[] = {0, 0x20, 0x40, 0x60};
+    return ModeVect(modes + 0, modes + sizeof(modes)/sizeof(modes[0]));
 }
 
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void YarsRevengeSettings::setMode(game_mode_t m, System &system,
-                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+                              StellaEnvironmentWrapper& environment) {
 
     if(m == 0 || m == 0x20 || m == 0x40 || m == 0x60) {
         // enter in mode selection screen
-        environment->pressSelect(2);
+        environment.pressSelect(2);
         // read the mode we are currently in
         unsigned char mode = readRam(&system, 0xE3);
         // press select until the correct mode is reached
         while (mode != m) {
-            environment->pressSelect();
+            environment.pressSelect();
             mode = readRam(&system, 0xE3);
         }
         //reset the environment to apply changes.
-        environment->softReset();
+        environment.softReset();
     }
     else {
         throw std::runtime_error("This mode doesn't currently exist for this game");
@@ -165,6 +165,6 @@ void YarsRevengeSettings::setMode(game_mode_t m, System &system,
  }
 
 DifficultyVect YarsRevengeSettings::getAvailableDifficulties() {
-    DifficultyVect diff = {0, 1};
-    return diff;
+    difficulty_t diff[] = {0, 1};
+    return DifficultyVect(diff + 0, diff + sizeof(diff)/sizeof(diff[0]));
 }

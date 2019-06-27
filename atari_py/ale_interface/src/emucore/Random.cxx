@@ -21,8 +21,7 @@
 #include "Serializer.hxx"
 #include "Deserializer.hxx"
 
-// This uses C++11.
-#include <random>
+#include "../common/mt19937.hpp"
 #include <sstream>
 
 // A static Random object for compatibility purposes. Don't use this.
@@ -31,7 +30,7 @@ Random Random::s_random;
 // Implementation of Random's random number generator wrapper. 
 class Random::Impl {
   
-  typedef std::mt19937 randgen_t;
+  typedef mt19937 randgen_t;
 
   public:
     

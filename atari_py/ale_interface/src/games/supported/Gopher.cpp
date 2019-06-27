@@ -130,26 +130,26 @@ ActionVect GopherSettings::getStartingActions() {
 
 // returns a list of mode that the game can be played in
 ModeVect GopherSettings::getAvailableModes() {
-    ModeVect modes = {0, 2};
-    return modes;
+    game_mode_t modes[] = {0, 2};
+    return ModeVect(modes + 0, modes + sizeof(modes)/sizeof(modes[0]));
 }
 
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void GopherSettings::setMode(game_mode_t m, System &system,
-                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+                              StellaEnvironmentWrapper& environment) {
 
     if(m == 0 || m == 2) {
-        environment->softReset();
+        environment.softReset();
         // read the mode we are currently in
         unsigned char mode = readRam(&system, 0xD3);
         // press select until the correct mode is reached
         while (mode != m) {
-            environment->pressSelect(5);
+            environment.pressSelect(5);
             mode = readRam(&system, 0xD3);
         }
         //reset the environment to apply changes.
-        environment->softReset();
+        environment.softReset();
     }
     else {
         throw std::runtime_error("This mode doesn't currently exist for this game");
@@ -157,6 +157,6 @@ void GopherSettings::setMode(game_mode_t m, System &system,
  }
 
 DifficultyVect GopherSettings::getAvailableDifficulties() {
-    DifficultyVect diff = {0, 1};
-    return diff;
+    difficulty_t diff[] = {0, 1};
+    return DifficultyVect(diff + 0, diff + sizeof(diff)/sizeof(diff[0]));
 }

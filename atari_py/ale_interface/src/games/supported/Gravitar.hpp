@@ -79,7 +79,7 @@ class GravitarSettings : public RomSettings {
         // set the mode of the game
         // the given mode must be one returned by the previous function
         void setMode(game_mode_t, System &system,
-                     std::unique_ptr<StellaEnvironmentWrapper> environment); 
+                     StellaEnvironmentWrapper& environment); 
 
     private:
 

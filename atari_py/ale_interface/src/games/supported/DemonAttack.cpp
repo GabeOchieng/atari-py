@@ -126,14 +126,14 @@ void DemonAttackSettings::loadState(Deserializer & ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect DemonAttackSettings::getAvailableModes() {
-    ModeVect modes = {1, 3, 5, 7};
-    return modes;
+    game_mode_t modes[] = {1, 3, 5, 7};
+    return ModeVect(modes + 0, modes + sizeof(modes)/sizeof(modes[0]));
 }
 
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void DemonAttackSettings::setMode(game_mode_t m, System &system,
-                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+                              StellaEnvironmentWrapper& environment) {
 
     if(m == 0) {
 	m = 1; // The default mode is not valid here
@@ -143,12 +143,12 @@ void DemonAttackSettings::setMode(game_mode_t m, System &system,
         unsigned char mode = readRam(&system, 0xEA);
         // press select until the correct mode is reached
         while (mode != m) {
-            environment->pressSelect(1);
+            environment.pressSelect(1);
             mode = readRam(&system, 0xEA);
         }
         m_level_change = true;
         //reset the environment to apply changes.
-        environment->softReset();
+        environment.softReset();
     }
     else {
         throw std::runtime_error("This mode doesn't currently exist for this game");
@@ -156,8 +156,8 @@ void DemonAttackSettings::setMode(game_mode_t m, System &system,
  }
 
 DifficultyVect DemonAttackSettings::getAvailableDifficulties() {
-    DifficultyVect diff = {0, 1};
-    return diff;
+    difficulty_t diff[] = {0, 1};
+    return DifficultyVect(diff + 0, diff + sizeof(diff)/sizeof(diff[0]));
 }
 
 

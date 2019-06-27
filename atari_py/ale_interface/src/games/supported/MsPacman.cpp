@@ -136,7 +136,7 @@ ModeVect MsPacmanSettings::getAvailableModes() {
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void MsPacmanSettings::setMode(game_mode_t m, System &system,
-                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+                              StellaEnvironmentWrapper& environment) {
 
     if(m < getNumModes()) {
         if(m == 0) { //this is the standard variation of the game
@@ -147,7 +147,7 @@ void MsPacmanSettings::setMode(game_mode_t m, System &system,
             // press select until the correct mode is reached
             while(mode != 1 || var != 1) {
                 // hold select button for 10 frames
-                environment->pressSelect(10);
+                environment.pressSelect(10);
                 mode = readRam(&system, 0x99);
                 var = readRam(&system, 0xA1);
             }
@@ -159,13 +159,13 @@ void MsPacmanSettings::setMode(game_mode_t m, System &system,
             // press select until the correct mode is reached
             while(mode != m || var != 0) {
                 // hold select button for 10 frames
-                environment->pressSelect(10);
+                environment.pressSelect(10);
                 mode = readRam(&system, 0x99);
                 var = readRam(&system, 0xA1);
             }
         }
         //reset the environment to apply changes.
-        environment->softReset();
+        environment.softReset();
     }
     else {
         throw std::runtime_error("This mode doesn't currently exist for this game");

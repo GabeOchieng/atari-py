@@ -130,7 +130,7 @@ void WizardOfWorSettings::loadState(Deserializer & ser) {
 }
 
 DifficultyVect WizardOfWorSettings::getAvailableDifficulties() {
-    DifficultyVect diff = {0, 1};
-    return diff;
+    difficulty_t diff[] = {0, 1};
+    return DifficultyVect(diff + 0, diff + sizeof(diff)/sizeof(diff[0]));
 }
 

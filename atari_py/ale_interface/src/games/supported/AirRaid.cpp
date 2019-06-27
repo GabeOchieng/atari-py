@@ -115,24 +115,24 @@ ModeVect AirRaidSettings::getAvailableModes() {
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void AirRaidSettings::setMode(game_mode_t m, System &system,
-                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+                              StellaEnvironmentWrapper& environment) {
 
     if(m == 0) {
         m = 1; // the default mode is not valid in this game
     }
     if(m >= 1 && m <= getNumModes()) {
         //open the mode selection panel
-        environment->pressSelect(20);
+        environment.pressSelect(20);
         // read the mode we are currently in
         unsigned char mode = readRam(&system, 0xAA);
         // press select until the correct mode is reached
         while (mode != m) {
             // hold select button for 10 frames
-            environment->pressSelect(10);
+            environment.pressSelect(10);
             mode = readRam(&system, 0xAA);
         }
         //reset the environment to apply changes.
-        environment->softReset();
+        environment.softReset();
     }
     else {
         throw std::runtime_error("This mode doesn't currently exist for this game");

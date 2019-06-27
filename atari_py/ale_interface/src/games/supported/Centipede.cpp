@@ -136,14 +136,14 @@ void CentipedeSettings::loadState(Deserializer & ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect CentipedeSettings::getAvailableModes() {
-    ModeVect modes = {0x16, 0x56};
-    return modes;
+    game_mode_t modes[] = {0x16, 0x56};
+    return ModeVect(modes + 0, modes + sizeof(modes)/sizeof(modes[0]));
 }
 
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void CentipedeSettings::setMode(game_mode_t m, System &system,
-                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+                              StellaEnvironmentWrapper& environment) {
     if (m == 0) {
         m = 0x16; // The default mode doesn't work here.
     }
@@ -152,11 +152,11 @@ void CentipedeSettings::setMode(game_mode_t m, System &system,
         unsigned char mode = readRam(&system, 0xA7);
         // press select until the correct mode is reached
         while (mode != m) {
-            environment->pressSelect(2);
+            environment.pressSelect(2);
             mode = readRam(&system, 0xA7);
         }
         //reset the environment to apply changes.
-        environment->softReset();
+        environment.softReset();
     }
     else {
         throw std::runtime_error("This mode doesn't currently exist for this game");

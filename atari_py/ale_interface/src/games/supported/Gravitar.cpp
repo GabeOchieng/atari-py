@@ -152,7 +152,7 @@ ModeVect GravitarSettings::getAvailableModes() {
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void GravitarSettings::setMode(game_mode_t m, System &system,
-                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+                              StellaEnvironmentWrapper& environment) {
 
     if(m < getNumModes()) {
         // read the mode we are currently in
@@ -160,7 +160,7 @@ void GravitarSettings::setMode(game_mode_t m, System &system,
         // press select until the correct mode is reached
         while (mode != m) {
             // hold select button for 10 frames
-            environment->pressSelect(10);
+            environment.pressSelect(10);
             mode = readRam(&system, 0x80);
         }
 
@@ -179,7 +179,7 @@ void GravitarSettings::setMode(game_mode_t m, System &system,
                 m_lives = 25;
         }
         //reset the environment to apply changes.
-        environment->softReset();
+        environment.softReset();
     }
     else {
         throw std::runtime_error("This mode doesn't currently exist for this game");

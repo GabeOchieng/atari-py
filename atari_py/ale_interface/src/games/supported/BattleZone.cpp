@@ -155,7 +155,7 @@ ModeVect BattleZoneSettings::getAvailableModes() {
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void BattleZoneSettings::setMode(game_mode_t m, System &system,
-    std::unique_ptr<StellaEnvironmentWrapper> environment) {
+    StellaEnvironmentWrapper& environment) {
 
     if(m == 0) {
         m = 1; // the default mode is not valid here
@@ -165,11 +165,11 @@ void BattleZoneSettings::setMode(game_mode_t m, System &system,
         unsigned char mode = readRam(&system, 0xA1);
         // press select until the correct mode is reached
         while (mode != m) {
-            environment->pressSelect(2);
+            environment.pressSelect(2);
             mode = readRam(&system, 0xA1);
         }
         //reset the environment to apply changes.
-        environment->softReset();
+        environment.softReset();
     }
     else {
         throw std::runtime_error("This mode doesn't currently exist for this game");

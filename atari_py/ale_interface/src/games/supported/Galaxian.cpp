@@ -124,14 +124,14 @@ void GalaxianSettings::loadState(Deserializer & ser) {
 
 // returns a list of mode that the game can be played in
 ModeVect GalaxianSettings::getAvailableModes() {
-    ModeVect modes = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-    return modes;
+    game_mode_t modes[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    return ModeVect(modes + 0, modes + sizeof(modes)/sizeof(modes[0]));
 }
 
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void GalaxianSettings::setMode(game_mode_t mode, System &system,
-                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+                              StellaEnvironmentWrapper& environment) {
 
     if (mode == 0)
         mode = 1;
@@ -139,10 +139,10 @@ void GalaxianSettings::setMode(game_mode_t mode, System &system,
     if (mode >= 1 && mode <= 9) {
         // press select until the correct mode is reached
         while (mode != static_cast<unsigned>(readRam(&system, 0xB3))) {
-            environment->pressSelect();
+            environment.pressSelect();
         }
         //reset the environment to apply changes.
-        environment->softReset();
+        environment.softReset();
     } else 
     {
         throw std::runtime_error("This mode doesn't currently exist for this game");

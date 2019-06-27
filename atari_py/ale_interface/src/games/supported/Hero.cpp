@@ -141,18 +141,18 @@ ModeVect HeroSettings::getAvailableModes() {
 // set the mode of the game
 // the given mode must be one returned by the previous function
 void HeroSettings::setMode(game_mode_t m, System &system,
-                              std::unique_ptr<StellaEnvironmentWrapper> environment) {
+                              StellaEnvironmentWrapper& environment) {
 
     if(m < getNumModes()) {
         // read the mode we are currently in
         unsigned char mode = readRam(&system, 0x80);
         // press select until the correct mode is reached
         while (mode != m) {
-            environment->pressSelect();
+            environment.pressSelect();
             mode = readRam(&system, 0x80);
         }
         //reset the environment to apply changes.
-        environment->softReset();
+        environment.softReset();
     }
     else {
         throw std::runtime_error("This mode doesn't currently exist for this game");

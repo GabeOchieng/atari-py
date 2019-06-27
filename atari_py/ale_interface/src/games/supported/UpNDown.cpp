@@ -125,7 +125,7 @@ ActionVect UpNDownSettings::getStartingActions() {
 }
 
 DifficultyVect UpNDownSettings::getAvailableDifficulties() {
-    DifficultyVect diff = {0, 1, 2, 3};
-    return diff;
+    difficulty_t diff[] = {0, 1, 2, 3};
+    return DifficultyVect(diff + 0, diff + sizeof(diff)/sizeof(diff[0]));
 }
 
