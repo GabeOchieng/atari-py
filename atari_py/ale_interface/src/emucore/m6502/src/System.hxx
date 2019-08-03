@@ -354,19 +354,19 @@ class System
  
   private:
     // Log base 2 of the addressing space size.
-    static constexpr uInt16 myAddressingSpace = 13;
+    static const uInt16 myAddressingSpace = 13;
 
     // Log base 2 of the page size.
-    static constexpr uInt16 myPageSize = 6;
+    static const uInt16 myPageSize = 6;
 
     // Mask to apply to an address before accessing memory
-    static constexpr uInt16 myAddressMask = (1 << myAddressingSpace) - 1;
+    static const uInt16 myAddressMask = (1 << myAddressingSpace) - 1;
 
     // Mask to apply to an address to obtain its page offset
-    static constexpr uInt16 myPageMask = (1 << myPageSize) - 1;
+    static const uInt16 myPageMask = (1 << myPageSize) - 1;
  
     // Number of pages in the system
-    static constexpr uInt16 myNumberOfPages = 1 << (myAddressingSpace - myPageSize);
+    static const uInt16 myNumberOfPages = 1 << (myAddressingSpace - myPageSize);
 
     // Pointer to a dynamically allocated array of PageAccess structures
     PageAccess* myPageAccessTable;
