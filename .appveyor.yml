@@ -21,14 +21,6 @@ before_test:
   - "%PYTHON%\\python.exe setup.py bdist_wheel"
   - "cd dist"
   - "%PYTHON%\\python.exe -m pip install --find-links=. atari-py"
-  - appveyor DownloadFile https://ci.appveyor.com/api/buildjobs/wei0aq14xjnvtujk/artifacts/dist%2Fopencv_python-4.1.1%2Bc1210db-cp38-cp38-win32.whl
-  - appveyor DownloadFile https://ci.appveyor.com/api/buildjobs/wmk3o3ffylu9glvq/artifacts/dist%2Fopencv_python-4.1.1%2Bc1210db-cp38-cp38-win_amd64.whl
-  - appveyor DownloadFile https://ci.appveyor.com/api/buildjobs/k3hcvcvoyfyav11x/artifacts/dist%2Fopencv_contrib_python-4.1.1%2Bc1210db-cp38-cp38-win32.whl
-  - appveyor DownloadFile https://ci.appveyor.com/api/buildjobs/qs0os11b4p85kbkh/artifacts/dist%2Fopencv_contrib_python-4.1.1%2Bc1210db-cp38-cp38-win_amd64.whl
-  - appveyor DownloadFile https://ci.appveyor.com/api/buildjobs/9s85evdy55643omt/artifacts/dist%2Fopencv_python_headless-4.1.1%2Bc1210db-cp38-cp38-win32.whl
-  - appveyor DownloadFile https://ci.appveyor.com/api/buildjobs/jsbhm8rfwe503s0u/artifacts/dist%2Fopencv_python_headless-4.1.1%2Bc1210db-cp38-cp38-win_amd64.whl
-  - appveyor DownloadFile https://ci.appveyor.com/api/buildjobs/i5e6uirklqhw1njv/artifacts/dist%2Fopencv_contrib_python_headless-4.1.1%2Bc1210db-cp38-cp38-win32.whl
-  - appveyor DownloadFile https://ci.appveyor.com/api/buildjobs/aybrdtctxxwp33n0/artifacts/dist%2Fopencv_contrib_python_headless-4.1.1%2Bc1210db-cp38-cp38-win_amd64.whl
   - "%PYTHON%\\python.exe -m pip install --find-links=. -U gym"
 
 test_script:
