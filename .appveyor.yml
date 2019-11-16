@@ -1,18 +1,19 @@
 environment:
   matrix:
-    - PYTHON: "C:\\Python27"
-    - PYTHON: "C:\\Python35"
-    - PYTHON: "C:\\Python36"
-    - PYTHON: "C:\\Python37"
+    #- PYTHON: "C:\\Python27"
+    #- PYTHON: "C:\\Python35"
+    #- PYTHON: "C:\\Python36"
+    #- PYTHON: "C:\\Python37"
     - PYTHON: "C:\\Python38"
-    - PYTHON: "C:\\Python27-x64"
-    - PYTHON: "C:\\Python35-x64"
-    - PYTHON: "C:\\Python36-x64"
-    - PYTHON: "C:\\Python37-x64"
+    #- PYTHON: "C:\\Python27-x64"
+    #- PYTHON: "C:\\Python35-x64"
+    #- PYTHON: "C:\\Python36-x64"
+    #- PYTHON: "C:\\Python37-x64"
     - PYTHON: "C:\\Python38-x64"
 
 install:
-  - "%PYTHON%\\python.exe -m pip install wheel"
+  - "%PYTHON%\\python.exe -m pip install -U pip"
+  - "%PYTHON%\\python.exe -m pip install -U setuptools wheel"
 
 build: off
 
@@ -20,7 +21,7 @@ before_test:
   - "%PYTHON%\\python.exe setup.py bdist_wheel"
   - "cd dist"
   - "%PYTHON%\\python.exe -m pip install --find-links=. atari-py"
-  - "%PYTHON%\\python.exe -m pip install gym"
+  - "%PYTHON%\\python.exe -m pip install -U gym"
 
 test_script:
   - "%PYTHON%\\python.exe -c \"import gym; env = gym.make('Enduro-v0'); env.reset(); [env.step(env.action_space.sample()) for i in range(1000)]\""
