@@ -6,7 +6,7 @@ An `openai/atari-py` fork with Windows support and removed zlib/libpng dependenc
 
 To simply install [`atari-py` wheels (binaries)](https://github.com/Kojoley/atari-py/releases) use this command:
 
-```pip install --no-index -f https://github.com/Kojoley/atari-py/releases atari_py```
+```pip install -f https://github.com/Kojoley/atari-py/releases atari_py```
 
 If you have any `distutils` supported compiler you can install from sources:
 
