@@ -8,7 +8,6 @@ from ctypes import *
 import numpy as np
 from numpy.ctypeslib import as_ctypes
 import os
-import six
 
 
 def get_shared_lib_path():

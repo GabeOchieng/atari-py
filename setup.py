@@ -88,6 +88,6 @@ setup(name='atari-py',
       package_data={'atari_py': ['atari_roms/*']},
       cmdclass={'build_ext': build_ext},
       ext_modules=[ale_c],
-      install_requires=['numpy', 'six'],
+      install_requires=['numpy'],
       tests_require=['nose2']
       )
