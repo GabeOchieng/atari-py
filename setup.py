@@ -45,6 +45,8 @@ modules = [os.path.join(basepath, os.path.normpath(path))
                        'emucore/m6502/src/bspf/src environment games '
                        'games/supported external external/TinyMT'.split()]
 defines = []
+cflags = []
+ldflags = []
 sources = [os.path.join('atari_py', 'ale_c_wrapper.cpp'),
            os.path.join(basepath, 'ale_interface.cpp')]
 includes = ['atari_py', basepath, os.path.join(basepath, 'os_dependent')]
@@ -68,17 +70,21 @@ elif sys.platform == "win32":
         sources.append(os.path.join(basepath, 'os_dependent', fname))
     # disable msvc secure warnings
     defines.append(('_CRT_SECURE_NO_WARNINGS', None))
+    cflags += ['/O2', '/GL', '/GF', '/EHs-']
+    ldflags += ['/LTCG']
 
 
 ale_c = Library('ale_c',
                 define_macros=defines,
+                extra_compile_args=cflags,
+                extra_link_args=ldflags,
                 sources=sources,
                 include_dirs=includes,
                 )
 
 
 setup(name='atari-py',
-      version='1.2.1',
+      version='1.2.2',
       description='Python bindings to Atari games',
       url='https://github.com/openai/atari-py',
       author='OpenAI',
